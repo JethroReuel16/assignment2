@@ -1,0 +1,15 @@
+
+WITH challengeCount AS (
+    SELECT h.hacker_id, h.name,
+        COUNT(c.challenge_id) AS chl_count
+    FROM hackers h 
+    JOIN challenges c ON h.hacker_id = c.hacker_id
+    GROUP BY h.hacker_id, h.name
+)
+SELECT hacker_id, name, chl_count
+FROM challengeCount cc
+WHERE  
+    chl_count = (SELECT MAX(chl_count) AS max_chl_count FROM challengeCount) 
+    OR NOT EXISTS (
+            SELECT 1 FROM challengeCount cc2 
+            WHERE cc2.hacker_id != cc.hacker_id AND cc2.chl_count = cc.chl_count) order by chl_count desc, hacker_id;
